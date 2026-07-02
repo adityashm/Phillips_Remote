@@ -9,6 +9,7 @@ public class IrHelper {
     private final ConsumerIrManager irManager;
     private final Context context;
     private boolean toggle = false;
+    private static final int DEFAULT_REPEAT_COUNT = 2;
 
     public IrHelper(Context context) {
         this.context = context;
@@ -28,7 +29,7 @@ public class IrHelper {
             Toast.makeText(context, "No IR blaster found!", Toast.LENGTH_SHORT).show();
             return;
         }
-        int[] pattern = RC5Encoder.encode(address, command, toggle);
+        int[] pattern = RC5Encoder.encodeRepeated(address, command, toggle, DEFAULT_REPEAT_COUNT);
         toggle = !toggle; // flip toggle bit for next press
         irManager.transmit(RC5Encoder.CARRIER_FREQ, pattern);
     }
@@ -38,7 +39,7 @@ public class IrHelper {
      */
     public void send(int address, int command, boolean toggleBit) {
         if (!hasIrBlaster()) return;
-        int[] pattern = RC5Encoder.encode(address, command, toggleBit);
+        int[] pattern = RC5Encoder.encodeRepeated(address, command, toggleBit, DEFAULT_REPEAT_COUNT);
         irManager.transmit(RC5Encoder.CARRIER_FREQ, pattern);
     }
 

@@ -69,9 +69,11 @@ public class SetupActivity extends AppCompatActivity {
         tvCmdVal        = findViewById(R.id.tvCmdVal);
 
         seekAddr.setMax(31);
-        seekCmd.setMax(63);
-        seekAddr.setProgress(prefs.getAddr());
-        seekCmd.setProgress(prefs.getVolUp()); // default to VOL+
+        seekCmd.setMax(127);
+        scanAddress = prefs.getAddr();
+        scanCommand = prefs.getVolUp(); // default to VOL+
+        seekAddr.setProgress(scanAddress);
+        seekCmd.setProgress(scanCommand);
     }
 
     private void setupListeners() {

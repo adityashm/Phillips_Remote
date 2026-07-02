@@ -65,7 +65,7 @@
             android:text="Command: 16" android:textColor="#E0E0E0" android:textSize="14sp"/>
         <SeekBar android:id="@+id/seekCmd"
             android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:max="63" android:progress="16" android:layout_marginBottom="12dp"/>
+            android:max="127" android:progress="16" android:layout_marginBottom="12dp"/>
 
         <TextView android:id="@+id/tvCurrentCode"
             android:layout_width="match_parent" android:layout_height="wrap_content"
