@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#111318">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="⚙ IR Code Setup"
+            android:textColor="#90CAF9"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/tvInstruction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Scan to find the correct IR codes for your MMS8085B"
+            android:textColor="#B0BEC5"
+            android:textSize="13sp"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Auto scan -->
+        <Button
+            android:id="@+id/btnNext"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="▶ Auto-Scan Addresses (0–31)"
+            android:backgroundTint="#1565C0"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="8dp"/>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:visibility="gone"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Manual sliders -->
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="MANUAL CONTROL" android:textColor="#90CAF9"
+            android:textSize="11sp" android:textStyle="bold" android:letterSpacing="0.1"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView android:id="@+id/tvAddrVal"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Address: 16" android:textColor="#E0E0E0" android:textSize="14sp"/>
+        <SeekBar android:id="@+id/seekAddr"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:max="31" android:progress="16" android:layout_marginBottom="12dp"/>
+
+        <TextView android:id="@+id/tvCmdVal"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Command: 16" android:textColor="#E0E0E0" android:textSize="14sp"/>
+        <SeekBar android:id="@+id/seekCmd"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:max="63" android:progress="16" android:layout_marginBottom="12dp"/>
+
+        <TextView android:id="@+id/tvCurrentCode"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Will send → Addr:16 Cmd:16"
+            android:textColor="#FFF176" android:textSize="14sp"
+            android:layout_marginBottom="12dp"/>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:layout_marginBottom="16dp">
+            <Button android:id="@+id/btnSendTest"
+                android:layout_width="0dp" android:layout_height="52dp" android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:text="📡 Send Test" android:backgroundTint="#37474F" android:textColor="#FFFFFF"/>
+            <Button android:id="@+id/btnConfirm"
+                android:layout_width="0dp" android:layout_height="52dp" android:layout_weight="1"
+                android:text="✔ Confirm" android:backgroundTint="#2E7D32" android:textColor="#FFFFFF"/>
+        </LinearLayout>
+
+        <!-- Button target selector -->
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="SELECT WHICH BUTTON TO CONFIGURE:"
+            android:textColor="#90CAF9" android:textSize="11sp"
+            android:textStyle="bold" android:letterSpacing="0.1"
+            android:layout_marginBottom="8dp"/>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:layout_marginBottom="6dp">
+            <Button android:id="@+id/btnTargetPower"
+                android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                android:layout_marginEnd="4dp" android:text="Power"
+                android:textSize="11sp" android:backgroundTint="#C62828" android:textColor="#FFFFFF"/>
+            <Button android:id="@+id/btnTargetMute"
+                android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                android:layout_marginEnd="4dp" android:text="Mute"
+                android:textSize="11sp" android:backgroundTint="#37474F" android:textColor="#FFFFFF"/>
+            <Button android:id="@+id/btnTargetVolUp"
+                android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                android:layout_marginEnd="4dp" android:text="Vol+"
+                android:textSize="11sp" android:backgroundTint="#263238" android:textColor="#FFFFFF"/>
+            <Button android:id="@+id/btnTargetVolDown"
+                android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                android:text="Vol-"
+                android:textSize="11sp" android:backgroundTint="#263238" android:textColor="#FFFFFF"/>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:layout_marginBottom="6dp">
+            <Button android:id="@+id/btnTargetBassUp"
+                android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                android:layout_marginEnd="4dp" android:text="Bass+"
+                android:textSize="11sp" android:backgroundTint="#4A148C" android:textColor="#FFFFFF"/>
+            <Button android:id="@+id/btnTargetBassDown"
+                android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                android:layout_marginEnd="4dp" android:text="Bass-"
+                android:textSize="11sp" android:backgroundTint="#4A148C" android:textColor="#FFFFFF"/>
+            <Button android:id="@+id/btnTargetBT"
+                android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                android:layout_marginEnd="4dp" android:text="BT"
+                android:textSize="11sp" android:backgroundTint="#1565C0" android:textColor="#FFFFFF"/>
+            <Button android:id="@+id/btnTargetAux"
+                android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                android:text="AUX"
+                android:textSize="11sp" android:backgroundTint="#2E7D32" android:textColor="#FFFFFF"/>
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:layout_marginBottom="16dp">
+            <Button android:id="@+id/btnTargetFM"
+                android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                android:layout_marginEnd="4dp" android:text="FM"
+                android:textSize="11sp" android:backgroundTint="#6A1B9A" android:textColor="#FFFFFF"/>
+            <Button android:id="@+id/btnTargetUSB"
+                android:layout_width="0dp" android:layout_height="44dp" android:layout_weight="1"
+                android:text="USB"
+                android:textSize="11sp" android:backgroundTint="#E65100" android:textColor="#FFFFFF"/>
+            <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="2"/>
+        </LinearLayout>
+
+        <!-- Saved codes summary -->
+        <TextView android:id="@+id/tvSavedCodes"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Saved codes: (loading...)"
+            android:textColor="#78909C" android:textSize="11sp"
+            android:fontFamily="monospace"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Save button -->
+        <Button android:id="@+id/btnSave"
+            android:layout_width="match_parent" android:layout_height="52dp"
+            android:text="💾 Save All &amp; Go Back"
+            android:backgroundTint="#00695C" android:textColor="#FFFFFF"
+            android:layout_marginBottom="16dp"/>
+
+    </LinearLayout>
+</ScrollView>
