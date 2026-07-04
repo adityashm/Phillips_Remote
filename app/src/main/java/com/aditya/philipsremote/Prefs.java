@@ -22,6 +22,7 @@ public class Prefs {
     private static final String KEY_FM          = "cmd_fm";
     private static final String KEY_USB         = "cmd_usb";
     private static final String KEY_SETUP_DONE  = "setup_done";
+    private static final String KEY_PROTOCOL    = "protocol";
 
     private final SharedPreferences prefs;
 
@@ -29,19 +30,36 @@ public class Prefs {
         prefs = context.getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE);
     }
 
-    // ---- Getters (defaults = Philips RC-5 amplifier address 16) ----
-    public int getAddr()      { return prefs.getInt(KEY_ADDR,      RC5Encoder.ADDR_AUDIO); }
-    public int getPower()     { return prefs.getInt(KEY_POWER,     RC5Encoder.CMD_POWER); }
-    public int getMute()      { return prefs.getInt(KEY_MUTE,      RC5Encoder.CMD_MUTE); }
-    public int getVolUp()     { return prefs.getInt(KEY_VOL_UP,    RC5Encoder.CMD_VOL_UP); }
-    public int getVolDown()   { return prefs.getInt(KEY_VOL_DOWN,  RC5Encoder.CMD_VOL_DOWN); }
-    public int getBassUp()    { return prefs.getInt(KEY_BASS_UP,   RC5Encoder.CMD_BASS_UP); }
-    public int getBassDown()  { return prefs.getInt(KEY_BASS_DOWN, RC5Encoder.CMD_BASS_DOWN); }
-    public int getBt()        { return prefs.getInt(KEY_BT,        RC5Encoder.CMD_BT); }
-    public int getAux()       { return prefs.getInt(KEY_AUX,       RC5Encoder.CMD_AUX); }
-    public int getFm()        { return prefs.getInt(KEY_FM,        RC5Encoder.CMD_FM); }
-    public int getUsb()       { return prefs.getInt(KEY_USB,       RC5Encoder.CMD_USB); }
+    // ---- Getters (defaults depend on selected protocol) ----
+    public int getAddr() {
+        return prefs.getInt(KEY_ADDR, defaultAddr());
+    }
+
+    public int getPower()     { return prefs.getInt(KEY_POWER,     cmdDefault(NECEncoder.CMD_POWER,     RC5Encoder.CMD_POWER)); }
+    public int getMute()      { return prefs.getInt(KEY_MUTE,      cmdDefault(NECEncoder.CMD_MUTE,      RC5Encoder.CMD_MUTE)); }
+    public int getVolUp()     { return prefs.getInt(KEY_VOL_UP,    cmdDefault(NECEncoder.CMD_VOL_UP,    RC5Encoder.CMD_VOL_UP)); }
+    public int getVolDown()   { return prefs.getInt(KEY_VOL_DOWN,  cmdDefault(NECEncoder.CMD_VOL_DOWN,  RC5Encoder.CMD_VOL_DOWN)); }
+    public int getBassUp()    { return prefs.getInt(KEY_BASS_UP,   cmdDefault(NECEncoder.CMD_BASS_UP,   RC5Encoder.CMD_BASS_UP)); }
+    public int getBassDown()  { return prefs.getInt(KEY_BASS_DOWN, cmdDefault(NECEncoder.CMD_BASS_DOWN, RC5Encoder.CMD_BASS_DOWN)); }
+    public int getBt()        { return prefs.getInt(KEY_BT,        cmdDefault(NECEncoder.CMD_BT,        RC5Encoder.CMD_BT)); }
+    public int getAux()       { return prefs.getInt(KEY_AUX,       cmdDefault(NECEncoder.CMD_AUX,       RC5Encoder.CMD_AUX)); }
+    public int getFm()        { return prefs.getInt(KEY_FM,        cmdDefault(NECEncoder.CMD_FM,        RC5Encoder.CMD_FM)); }
+    public int getUsb()       { return prefs.getInt(KEY_USB,       cmdDefault(NECEncoder.CMD_USB,       RC5Encoder.CMD_USB)); }
+
     public boolean isSetupDone() { return prefs.getBoolean(KEY_SETUP_DONE, false); }
+
+    /** MMS8085B India-market units typically use NEC, not European RC-5. */
+    public String getProtocol() { return prefs.getString(KEY_PROTOCOL, IrProtocol.NEC); }
+
+    private int defaultAddr() {
+        return IrProtocol.NEC.equals(getProtocol())
+                ? NECEncoder.ADDR_DEFAULT
+                : RC5Encoder.ADDR_AUDIO;
+    }
+
+    private int cmdDefault(int necValue, int rc5Value) {
+        return IrProtocol.NEC.equals(getProtocol()) ? necValue : rc5Value;
+    }
 
     // ---- Setters ----
     public void setAddr(int v)      { prefs.edit().putInt(KEY_ADDR, v).apply(); }
@@ -56,6 +74,7 @@ public class Prefs {
     public void setFm(int v)        { prefs.edit().putInt(KEY_FM, v).apply(); }
     public void setUsb(int v)       { prefs.edit().putInt(KEY_USB, v).apply(); }
     public void setSetupDone(boolean v) { prefs.edit().putBoolean(KEY_SETUP_DONE, v).apply(); }
+    public void setProtocol(String v) { prefs.edit().putString(KEY_PROTOCOL, v).apply(); }
 
     public void resetToDefaults() {
         prefs.edit().clear().apply();

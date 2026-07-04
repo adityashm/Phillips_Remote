@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
             statusText.setText("⚠️ No IR Blaster detected");
             statusText.setTextColor(getColor(android.R.color.holo_red_light));
         } else {
-            statusText.setText("✅ IR Blaster Ready — Philips MMS8085B");
+            statusText.setText("✅ IR Ready — " + prefs.getProtocol() + " @ subwoofer sensor");
         }
 
         // Show first-run hint
