@@ -26,9 +26,21 @@ public class NECEncoder {
     public static final int CMD_FM         = 0x4C;
     public static final int CMD_USB        = 0x4D;
 
-    /** Addresses to try first when auto-scanning (full 0–255 takes too long). */
+    /** Addresses to try first when auto-scanning.
+     *  Covers standard Chinese OEM multimedia speaker chipsets, Philips India range,
+     *  and common budget remote addresses. Full 0–255 sweep takes ~6 min, so we target
+     *  the most likely candidates first. */
     public static final int[] COMMON_ADDRESSES = {
-            0x00, 0x01, 0x02, 0x03, 0x10, 0x20, 0x40, 0x80, 0xFF, 0xFE, 0xFD, 0xFC
+            // Generic Chinese OEM — most common for India-market MMS speakers
+            0x00, 0x01, 0x02, 0x04, 0x05, 0x06, 0x07, 0x08,
+            // Philips/OEM multimedia-specific addresses reported on forums
+            0x10, 0x12, 0x14, 0x20,
+            // High-byte addresses common for budget remote chipsets
+            0x40, 0x56, 0x59, 0x5E,
+            // Inverted-address style (addr + ~addr in 16-bit NEC extended)
+            0x80, 0xF7, 0xFA, 0xFC, 0xFD, 0xFE, 0xFF,
+            // A few more spotted in OEM multimedia remote dumps
+            0x09, 0x0A
     };
 
     private static final int HEADER_MARK = 9000;

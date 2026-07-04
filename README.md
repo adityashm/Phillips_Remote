@@ -15,14 +15,15 @@ Built specifically for Aditya | Realme GT 7 + Philips MMS8085B
 5. App installs directly on your phone
 
 ### First Launch
-- The app defaults to Philips RC-5 Address=16 (standard audio amplifier)
-- Point phone IR at the SUBWOOFER front panel (not the satellite speakers)
-- If buttons don't respond → tap ⚙ Setup → run Auto-Scan to find correct address
+- The app now defaults to **NEC @ 38 kHz** (most likely for India-market MMS8085B)
+- Point phone IR at the **SUBWOOFER front panel** (not the satellite speakers!)
+- If buttons don't respond → tap ⚙ Setup → run Auto-Scan NEC Addresses
+- If NEC doesn't work → try RC-6 (addr 16) → then RC-5 (addr 16)
 
 ### How the Setup/Scan Works
-1. Auto-Scan sends VOL+ command across all addresses 0-31
-2. When your MMS8085B volume increases → Stop and note the address
-3. Confirm that address, then fine-tune each button's command code
+1. Auto-Scan (NEC mode) sends VOL+ across **25 common OEM addresses** every 1.5 s
+2. When your MMS8085B volume increases → Stop and note the address shown
+3. Confirm that address, then tap each button label and adjust Command slider until it works
 4. Once all buttons confirmed, tap Save
 
 ### Files

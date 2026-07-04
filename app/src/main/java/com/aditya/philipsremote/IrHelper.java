@@ -6,7 +6,7 @@ import android.widget.Toast;
 
 public class IrHelper {
 
-    private static final int DEFAULT_REPEAT_COUNT = 3;
+    private static final int DEFAULT_REPEAT_COUNT = 5;
 
     private final ConsumerIrManager irManager;
     private final Context context;

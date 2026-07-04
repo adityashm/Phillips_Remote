@@ -32,6 +32,7 @@ public class SetupActivity extends AppCompatActivity {
 
     private TextView tvInstruction, tvCurrentCode, tvSavedCodes, tvProtocol;
     private Button btnProtocolNec, btnProtocolRc5, btnProtocolRc6;
+    private Button btnSendTest, btnConfirm, btnNext, btnSave;
     private ProgressBar progressBar;
     private SeekBar seekAddr, seekCmd;
     private TextView tvAddrVal, tvCmdVal;
@@ -334,9 +335,9 @@ public class SetupActivity extends AppCompatActivity {
         tvCmdVal.setText("Command: " + scanCommand + " (0x" + Integer.toHexString(scanCommand) + ")");
         String protocol = prefs.getProtocol();
         tvInstruction.setText(
-            "RC-6 (modern Philips) is pre-selected.\n" +
-            "Tap Auto-Scan to test, then adjust sliders.\n" +
-            "Address 16 (0x10) is used for Philips audio.\n" +
+            "NEC @ 38 kHz is pre-selected (most likely for MMS8085B India).\n" +
+            "Tap Auto-Scan NEC Addresses to find the right address.\n" +
+            "Point the phone IR at the SUBWOOFER front panel.\n" +
             "Select each button → adjust Command → CONFIRM."
         );
         updateCodePreview();

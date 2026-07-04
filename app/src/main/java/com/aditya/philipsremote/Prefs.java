@@ -5,7 +5,9 @@ import android.content.SharedPreferences;
 
 /**
  * Stores IR address and command codes discovered during setup.
- * Default values are Philips RC-5 audio amplifier (address 16).
+ * Default protocol is NEC @ 38 kHz — most common for India-market
+ * Philips MMS multimedia speakers (MMS8080B / MMS8085B).
+ * Fall back to RC-6 or RC-5 via the Setup scanner if NEC doesn't work.
  */
 public class Prefs {
     private static final String PREF_FILE = "philips_remote_prefs";
@@ -48,8 +50,9 @@ public class Prefs {
 
     public boolean isSetupDone() { return prefs.getBoolean(KEY_SETUP_DONE, false); }
 
-    /** MMS8085B (2023+) uses RC-6, similar Philips soundbars. Try RC-6 first. */
-    public String getProtocol() { return prefs.getString(KEY_PROTOCOL, IrProtocol.RC6); }
+    /** NEC @ 38 kHz is the most likely protocol for India-market MMS8085B.
+     *  Use Setup scanner to confirm; fall back to RC-6 or RC-5 if needed. */
+    public String getProtocol() { return prefs.getString(KEY_PROTOCOL, IrProtocol.NEC); }
 
     private int defaultAddr() {
         String protocol = getProtocol();
