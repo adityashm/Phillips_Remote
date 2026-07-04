@@ -35,30 +35,38 @@ public class Prefs {
         return prefs.getInt(KEY_ADDR, defaultAddr());
     }
 
-    public int getPower()     { return prefs.getInt(KEY_POWER,     cmdDefault(NECEncoder.CMD_POWER,     RC5Encoder.CMD_POWER)); }
-    public int getMute()      { return prefs.getInt(KEY_MUTE,      cmdDefault(NECEncoder.CMD_MUTE,      RC5Encoder.CMD_MUTE)); }
-    public int getVolUp()     { return prefs.getInt(KEY_VOL_UP,    cmdDefault(NECEncoder.CMD_VOL_UP,    RC5Encoder.CMD_VOL_UP)); }
-    public int getVolDown()   { return prefs.getInt(KEY_VOL_DOWN,  cmdDefault(NECEncoder.CMD_VOL_DOWN,  RC5Encoder.CMD_VOL_DOWN)); }
-    public int getBassUp()    { return prefs.getInt(KEY_BASS_UP,   cmdDefault(NECEncoder.CMD_BASS_UP,   RC5Encoder.CMD_BASS_UP)); }
-    public int getBassDown()  { return prefs.getInt(KEY_BASS_DOWN, cmdDefault(NECEncoder.CMD_BASS_DOWN, RC5Encoder.CMD_BASS_DOWN)); }
-    public int getBt()        { return prefs.getInt(KEY_BT,        cmdDefault(NECEncoder.CMD_BT,        RC5Encoder.CMD_BT)); }
-    public int getAux()       { return prefs.getInt(KEY_AUX,       cmdDefault(NECEncoder.CMD_AUX,       RC5Encoder.CMD_AUX)); }
-    public int getFm()        { return prefs.getInt(KEY_FM,        cmdDefault(NECEncoder.CMD_FM,        RC5Encoder.CMD_FM)); }
-    public int getUsb()       { return prefs.getInt(KEY_USB,       cmdDefault(NECEncoder.CMD_USB,       RC5Encoder.CMD_USB)); }
+    public int getPower()     { return prefs.getInt(KEY_POWER,     cmdDefault(NECEncoder.CMD_POWER,     RC6Encoder.CMD_POWER,     RC5Encoder.CMD_POWER)); }
+    public int getMute()      { return prefs.getInt(KEY_MUTE,      cmdDefault(NECEncoder.CMD_MUTE,      RC6Encoder.CMD_MUTE,      RC5Encoder.CMD_MUTE)); }
+    public int getVolUp()     { return prefs.getInt(KEY_VOL_UP,    cmdDefault(NECEncoder.CMD_VOL_UP,    RC6Encoder.CMD_VOL_UP,    RC5Encoder.CMD_VOL_UP)); }
+    public int getVolDown()   { return prefs.getInt(KEY_VOL_DOWN,  cmdDefault(NECEncoder.CMD_VOL_DOWN,  RC6Encoder.CMD_VOL_DOWN,  RC5Encoder.CMD_VOL_DOWN)); }
+    public int getBassUp()    { return prefs.getInt(KEY_BASS_UP,   cmdDefault(NECEncoder.CMD_BASS_UP,   RC6Encoder.CMD_BASS_UP,   RC5Encoder.CMD_BASS_UP)); }
+    public int getBassDown()  { return prefs.getInt(KEY_BASS_DOWN, cmdDefault(NECEncoder.CMD_BASS_DOWN, RC6Encoder.CMD_BASS_DOWN, RC5Encoder.CMD_BASS_DOWN)); }
+    public int getBt()        { return prefs.getInt(KEY_BT,        cmdDefault(NECEncoder.CMD_BT,        RC6Encoder.CMD_BT,        RC5Encoder.CMD_BT)); }
+    public int getAux()       { return prefs.getInt(KEY_AUX,       cmdDefault(NECEncoder.CMD_AUX,       RC6Encoder.CMD_AUX,       RC5Encoder.CMD_AUX)); }
+    public int getFm()        { return prefs.getInt(KEY_FM,        cmdDefault(NECEncoder.CMD_FM,        RC6Encoder.CMD_FM,        RC5Encoder.CMD_FM)); }
+    public int getUsb()       { return prefs.getInt(KEY_USB,       cmdDefault(NECEncoder.CMD_USB,       RC6Encoder.CMD_USB,       RC5Encoder.CMD_USB)); }
 
     public boolean isSetupDone() { return prefs.getBoolean(KEY_SETUP_DONE, false); }
 
-    /** MMS8085B India-market units typically use NEC, not European RC-5. */
-    public String getProtocol() { return prefs.getString(KEY_PROTOCOL, IrProtocol.NEC); }
+    /** MMS8085B (2023+) uses RC-6, similar Philips soundbars. Try RC-6 first. */
+    public String getProtocol() { return prefs.getString(KEY_PROTOCOL, IrProtocol.RC6); }
 
     private int defaultAddr() {
-        return IrProtocol.NEC.equals(getProtocol())
-                ? NECEncoder.ADDR_DEFAULT
-                : RC5Encoder.ADDR_AUDIO;
+        String protocol = getProtocol();
+        if (IrProtocol.NEC.equals(protocol)) {
+            return NECEncoder.ADDR_DEFAULT;
+        }
+        if (IrProtocol.RC6.equals(protocol)) {
+            return RC6Encoder.ADDR_AUDIO;
+        }
+        return RC5Encoder.ADDR_AUDIO;
     }
 
-    private int cmdDefault(int necValue, int rc5Value) {
-        return IrProtocol.NEC.equals(getProtocol()) ? necValue : rc5Value;
+    private int cmdDefault(int necValue, int rc6Value, int rc5Value) {
+        String protocol = getProtocol();
+        if (IrProtocol.NEC.equals(protocol)) return necValue;
+        if (IrProtocol.RC6.equals(protocol)) return rc6Value;
+        return rc5Value;
     }
 
     // ---- Setters ----

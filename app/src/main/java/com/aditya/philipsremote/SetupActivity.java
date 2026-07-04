@@ -31,7 +31,7 @@ public class SetupActivity extends AppCompatActivity {
     private String currentScanTarget = "power";
 
     private TextView tvInstruction, tvCurrentCode, tvSavedCodes, tvProtocol;
-    private Button btnSendTest, btnConfirm, btnNext, btnSave, btnProtocolNec, btnProtocolRc5;
+    private Button btnProtocolNec, btnProtocolRc5, btnProtocolRc6;
     private ProgressBar progressBar;
     private SeekBar seekAddr, seekCmd;
     private TextView tvAddrVal, tvCmdVal;
@@ -64,6 +64,7 @@ public class SetupActivity extends AppCompatActivity {
         btnSave         = findViewById(R.id.btnSave);
         btnProtocolNec  = findViewById(R.id.btnProtocolNec);
         btnProtocolRc5  = findViewById(R.id.btnProtocolRc5);
+        btnProtocolRc6  = findViewById(R.id.btnProtocolRc6);
         progressBar     = findViewById(R.id.progressBar);
         seekAddr        = findViewById(R.id.seekAddr);
         seekCmd         = findViewById(R.id.seekCmd);
@@ -77,6 +78,7 @@ public class SetupActivity extends AppCompatActivity {
     private void setupListeners() {
         btnProtocolNec.setOnClickListener(v -> applyProtocol(IrProtocol.NEC, true));
         btnProtocolRc5.setOnClickListener(v -> applyProtocol(IrProtocol.RC5, true));
+        btnProtocolRc6.setOnClickListener(v -> applyProtocol(IrProtocol.RC6, true));
 
         seekAddr.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             public void onProgressChanged(SeekBar s, int p, boolean u) {
@@ -120,12 +122,21 @@ public class SetupActivity extends AppCompatActivity {
         irHelper.resetToggle();
 
         boolean nec = IrProtocol.NEC.equals(protocol);
+        boolean rc6 = IrProtocol.RC6.equals(protocol);
         seekAddr.setMax(IrProtocol.maxAddress(protocol));
         seekCmd.setMax(IrProtocol.maxCommand(protocol));
 
         if (userChanged) {
-            scanAddress = nec ? NECEncoder.ADDR_DEFAULT : RC5Encoder.ADDR_AUDIO;
-            scanCommand = nec ? NECEncoder.CMD_VOL_UP : RC5Encoder.CMD_VOL_UP;
+            if (nec) {
+                scanAddress = NECEncoder.ADDR_DEFAULT;
+                scanCommand = NECEncoder.CMD_VOL_UP;
+            } else if (rc6) {
+                scanAddress = RC6Encoder.ADDR_AUDIO;
+                scanCommand = RC6Encoder.CMD_VOL_UP;
+            } else {
+                scanAddress = RC5Encoder.ADDR_AUDIO;
+                scanCommand = RC5Encoder.CMD_VOL_UP;
+            }
         } else {
             scanAddress = Math.min(scanAddress, IrProtocol.maxAddress(protocol));
             scanCommand = Math.min(scanCommand, IrProtocol.maxCommand(protocol));
@@ -137,15 +148,21 @@ public class SetupActivity extends AppCompatActivity {
         btnProtocolNec.setBackgroundTintList(getColorStateList(
                 nec ? android.R.color.holo_blue_dark : android.R.color.darker_gray));
         btnProtocolRc5.setBackgroundTintList(getColorStateList(
-                nec ? android.R.color.darker_gray : android.R.color.holo_blue_dark));
+                rc6 ? android.R.color.darker_gray : (nec ? android.R.color.darker_gray : android.R.color.holo_blue_dark)));
+        btnProtocolRc6.setBackgroundTintList(getColorStateList(
+                rc6 ? android.R.color.holo_blue_dark : android.R.color.darker_gray));
 
         tvProtocol.setText(nec
                 ? "Protocol: NEC @ 38 kHz (try this first for MMS8085B)"
-                : "Protocol: RC-5 @ 36 kHz (European Philips gear)");
+                : rc6
+                    ? "Protocol: RC-6 @ 36 kHz (modern Philips audio)"
+                    : "Protocol: RC-5 @ 36 kHz (European Philips gear)");
 
         btnNext.setText(nec
                 ? "▶ Auto-Scan NEC Addresses"
-                : "▶ Auto-Scan RC-5 Addresses (0–31)");
+                : rc6
+                    ? "▶ Auto-Scan RC-6 (addr 16)"
+                    : "▶ Auto-Scan RC-5 Addresses (0–31)");
 
         updateCodePreview();
         updateSavedCodesDisplay();
@@ -177,18 +194,20 @@ public class SetupActivity extends AppCompatActivity {
     }
 
     private int defaultCommandFor(String target) {
-        boolean nec = IrProtocol.NEC.equals(prefs.getProtocol());
+        String protocol = prefs.getProtocol();
+        boolean nec = IrProtocol.NEC.equals(protocol);
+        boolean rc6 = IrProtocol.RC6.equals(protocol);
         switch (target) {
-            case "power":    return nec ? NECEncoder.CMD_POWER     : RC5Encoder.CMD_POWER;
-            case "vol_up":   return nec ? NECEncoder.CMD_VOL_UP   : RC5Encoder.CMD_VOL_UP;
-            case "vol_down": return nec ? NECEncoder.CMD_VOL_DOWN : RC5Encoder.CMD_VOL_DOWN;
-            case "mute":     return nec ? NECEncoder.CMD_MUTE     : RC5Encoder.CMD_MUTE;
-            case "bass_up":  return nec ? NECEncoder.CMD_BASS_UP  : RC5Encoder.CMD_BASS_UP;
-            case "bass_down":return nec ? NECEncoder.CMD_BASS_DOWN: RC5Encoder.CMD_BASS_DOWN;
-            case "bt":       return nec ? NECEncoder.CMD_BT       : RC5Encoder.CMD_BT;
-            case "aux":      return nec ? NECEncoder.CMD_AUX      : RC5Encoder.CMD_AUX;
-            case "fm":       return nec ? NECEncoder.CMD_FM       : RC5Encoder.CMD_FM;
-            case "usb":      return nec ? NECEncoder.CMD_USB      : RC5Encoder.CMD_USB;
+            case "power":    return nec ? NECEncoder.CMD_POWER     : (rc6 ? RC6Encoder.CMD_POWER     : RC5Encoder.CMD_POWER);
+            case "vol_up":   return nec ? NECEncoder.CMD_VOL_UP   : (rc6 ? RC6Encoder.CMD_VOL_UP   : RC5Encoder.CMD_VOL_UP);
+            case "vol_down": return nec ? NECEncoder.CMD_VOL_DOWN : (rc6 ? RC6Encoder.CMD_VOL_DOWN : RC5Encoder.CMD_VOL_DOWN);
+            case "mute":     return nec ? NECEncoder.CMD_MUTE     : (rc6 ? RC6Encoder.CMD_MUTE     : RC5Encoder.CMD_MUTE);
+            case "bass_up":  return nec ? NECEncoder.CMD_BASS_UP  : (rc6 ? RC6Encoder.CMD_BASS_UP  : RC5Encoder.CMD_BASS_UP);
+            case "bass_down":return nec ? NECEncoder.CMD_BASS_DOWN: (rc6 ? RC6Encoder.CMD_BASS_DOWN: RC5Encoder.CMD_BASS_DOWN);
+            case "bt":       return nec ? NECEncoder.CMD_BT       : (rc6 ? RC6Encoder.CMD_BT       : RC5Encoder.CMD_BT);
+            case "aux":      return nec ? NECEncoder.CMD_AUX      : (rc6 ? RC6Encoder.CMD_AUX      : RC5Encoder.CMD_AUX);
+            case "fm":       return nec ? NECEncoder.CMD_FM       : (rc6 ? RC6Encoder.CMD_FM       : RC5Encoder.CMD_FM);
+            case "usb":      return nec ? NECEncoder.CMD_USB      : (rc6 ? RC6Encoder.CMD_USB      : RC5Encoder.CMD_USB);
             default:         return scanCommand;
         }
     }
@@ -220,12 +239,17 @@ public class SetupActivity extends AppCompatActivity {
         }
 
         boolean nec = IrProtocol.NEC.equals(prefs.getProtocol());
+        boolean rc6 = IrProtocol.RC6.equals(prefs.getProtocol());
         String message = nec
                 ? "Sends VOL+ on common NEC addresses (0x00, 0x01, 0xFF, …) every 1.5 s.\n\n"
                 + "Watch your MMS8085B — when volume changes, tap STOP and note the address.\n\n"
                 + "If nothing responds, use the Address slider to try other values (0–255)."
-                : "Sends VOL+ on RC-5 addresses 0–31 every 1.5 s.\n\n"
-                + "Watch your MMS8085B — when volume changes, tap STOP and note the address.";
+                : rc6
+                    ? "Sends RC-6 VOL+ (addr 0x10, cmd 0x10) repeatedly.\n\n"
+                    + "RC-6 is used by recent Philips audio devices (MMS8085B, soundbars).\n\n"
+                    + "If VOL+ works, adjust Command slider for other buttons, Address stays at 16."
+                    : "Sends VOL+ on RC-5 addresses 0–31 every 1.5 s.\n\n"
+                        + "Watch your MMS8085B — when volume changes, tap STOP and note the address.";
 
         new AlertDialog.Builder(this)
             .setTitle("Auto Address Scan")
@@ -246,24 +270,37 @@ public class SetupActivity extends AppCompatActivity {
 
     private void stopAutoScan(String message) {
         autoScanRunning = false;
-        btnNext.setText(IrProtocol.NEC.equals(prefs.getProtocol())
+        boolean nec = IrProtocol.NEC.equals(prefs.getProtocol());
+        boolean rc6 = IrProtocol.RC6.equals(prefs.getProtocol());
+        btnNext.setText(nec
                 ? "▶ Auto-Scan NEC Addresses"
-                : "▶ Auto-Scan RC-5 Addresses (0–31)");
+                : rc6
+                    ? "▶ Auto-Scan RC-6 (addr 16)"
+                    : "▶ Auto-Scan RC-5 Addresses (0–31)");
         progressBar.setVisibility(View.GONE);
         tvInstruction.setText(message);
     }
 
     private int scanTotalSteps() {
-        return IrProtocol.NEC.equals(prefs.getProtocol())
-                ? NECEncoder.COMMON_ADDRESSES.length
-                : 32;
+        String protocol = prefs.getProtocol();
+        if (IrProtocol.NEC.equals(protocol)) {
+            return NECEncoder.COMMON_ADDRESSES.length;
+        }
+        if (IrProtocol.RC6.equals(protocol)) {
+            return 1; // Just test address 16 (audio), use manual sliders to fine-tune
+        }
+        return 32; // RC5 0-31
     }
 
     private int addressForScanStep(int step) {
-        if (IrProtocol.NEC.equals(prefs.getProtocol())) {
+        String protocol = prefs.getProtocol();
+        if (IrProtocol.NEC.equals(protocol)) {
             return NECEncoder.COMMON_ADDRESSES[step];
         }
-        return step;
+        if (IrProtocol.RC6.equals(protocol)) {
+            return RC6Encoder.ADDR_AUDIO; // Always address 16
+        }
+        return step; // RC5
     }
 
     private void doNextScanStep() {
@@ -273,9 +310,15 @@ public class SetupActivity extends AppCompatActivity {
         }
 
         scanAddress = addressForScanStep(scanStep);
-        int cmd = IrProtocol.NEC.equals(prefs.getProtocol())
-                ? NECEncoder.CMD_VOL_UP
-                : RC5Encoder.CMD_VOL_UP;
+        String protocol = prefs.getProtocol();
+        int cmd;
+        if (IrProtocol.NEC.equals(protocol)) {
+            cmd = NECEncoder.CMD_VOL_UP;
+        } else if (IrProtocol.RC6.equals(protocol)) {
+            cmd = RC6Encoder.CMD_VOL_UP;
+        } else {
+            cmd = RC5Encoder.CMD_VOL_UP;
+        }
 
         irHelper.send(scanAddress, cmd);
         tvCurrentCode.setText("Scanning → " + formatCode(scanAddress, cmd) + " (VOL+)");
@@ -289,10 +332,12 @@ public class SetupActivity extends AppCompatActivity {
         seekAddr.setProgress(scanAddress);
         tvAddrVal.setText("Address: " + scanAddress + " (0x" + Integer.toHexString(scanAddress) + ")");
         tvCmdVal.setText("Command: " + scanCommand + " (0x" + Integer.toHexString(scanCommand) + ")");
+        String protocol = prefs.getProtocol();
         tvInstruction.setText(
-            "STEP 1: Keep NEC selected (default) and run Auto-Scan.\n" +
-            "STEP 2: Select each button below and adjust Command until it works.\n" +
-            "STEP 3: Tap CONFIRM ✔ after each button, then SAVE ALL."
+            "RC-6 (modern Philips) is pre-selected.\n" +
+            "Tap Auto-Scan to test, then adjust sliders.\n" +
+            "Address 16 (0x10) is used for Philips audio.\n" +
+            "Select each button → adjust Command → CONFIRM."
         );
         updateCodePreview();
         updateSavedCodesDisplay();

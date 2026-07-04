@@ -29,13 +29,13 @@ public class MainActivity extends AppCompatActivity {
             statusText.setText("⚠️ No IR Blaster detected");
             statusText.setTextColor(getColor(android.R.color.holo_red_light));
         } else {
-            statusText.setText("✅ IR Ready — " + prefs.getProtocol() + " @ subwoofer sensor");
+            statusText.setText("✅ IR Ready — " + prefs.getProtocol() + " @ subwoofer sensor (addr " + prefs.getAddr() + ")");
         }
 
         // Show first-run hint
         if (!prefs.isSetupDone()) {
             Toast.makeText(this,
-                    "Tip: If buttons don't work, tap ⚙ Setup to scan for correct IR codes",
+                    "Tip: RC-6 is pre-selected for MMS8085B. If no response, tap ⚙ Setup to try other protocols/codes",
                     Toast.LENGTH_LONG).show();
         }
 
